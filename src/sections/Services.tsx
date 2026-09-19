@@ -50,10 +50,10 @@ const services: Service[] = [
 
 export default function Services() {
   return (
-    <Section id="services">
+    <Section id="services" scrim>
       <div className="mb-12 max-w-2xl">
         <Reveal variant="left">
-          <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+          <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
             What I do
           </p>
         </Reveal>

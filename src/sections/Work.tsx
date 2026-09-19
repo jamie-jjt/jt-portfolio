@@ -14,50 +14,50 @@ type Feature = {
 const features: Feature[] = [
   {
     no: '01',
-    title: 'Frontend Engineering',
-    body: 'Built major portions of the user-facing frontend in React + TypeScript — dashboards, project workflows, service catalog, and administration modules.',
+    title: 'Core Business Logic',
+    body: 'Built key end-to-end workflows connecting user requests, approvals, and downstream processing across the platform.',
     span: true,
   },
   {
     no: '02',
-    title: 'Pricing & Quotation',
-    body: 'Role-based access control and quotation flows — AWS Pricing Calculator, discounts, FX conversion, VAT, and submission.',
+    title: 'Pricing & Computation',
+    body: 'Developed pricing and computation logic with multi-currency support and rule-based calculations.',
   },
   {
     no: '03',
-    title: 'API Integration',
-    body: 'TanStack Query on the frontend; contributed PHP/Laravel and PostgreSQL / Amazon RDS on the backend.',
+    title: 'Data Processing',
+    body: 'Built server-side data parsing and preview flows that turn uploaded files into structured, usable data.',
   },
   {
     no: '04',
-    title: 'Business Requirements',
-    body: 'Authored the BRD across 15 business processes, project lifecycle states, and role/permission requirements.',
+    title: 'Full-Stack Delivery',
+    body: 'Shipped features across the stack — React/TypeScript interfaces backed by a Laravel API — with reusable, accessible UI.',
     span: true,
   },
 ];
 
 const metrics = [
-  { value: '$14M', label: 'Forecasted first-year revenue' },
-  { value: '15', label: 'Business processes mapped' },
-  { value: 'Full-stack', label: 'Frontend, backend & BRD' },
+  { value: 'End-to-end', label: 'Core workflows delivered' },
+  { value: 'Full-stack', label: 'Frontend & backend' },
+  { value: 'AWS', label: 'Cloud-deployed & live' },
 ];
 
 const stack = [
   'React',
   'TypeScript',
-  'TanStack Query',
+  'React Router',
+  'Tailwind CSS',
   'PHP / Laravel',
-  'PostgreSQL',
-  'Amazon RDS',
+  'MongoDB',
   'AWS',
 ];
 
 export default function Work() {
   return (
-    <Section id="work">
+    <Section id="work" scrim>
       <div className="mb-12 max-w-2xl">
         <Reveal variant="left">
-          <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+          <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
             Selected work
           </p>
         </Reveal>
@@ -84,7 +84,7 @@ export default function Work() {
                 </span>
               </div>
               <WaveText
-                text="A cloud fulfillment platform for public-sector procurement — service catalog and quotation through project lifecycle and administration. I worked across the stack and the requirements."
+                text="An enterprise cloud platform for a public-sector engagement. I contributed across the stack, focusing on the core business-logic workflows that power it."
                 className="max-w-md text-sm leading-relaxed text-white/70 md:text-right"
                 stagger={0.02}
               />
@@ -92,27 +92,49 @@ export default function Work() {
 
             <div className="pt-4 md:pt-16">
               <h3 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl">
-                Public-Sector Cloud
+                Cloud Service
                 <br />
                 <span className="text-gradient">Fulfillment Platform</span>
               </h3>
               <p className="mt-4 text-sm text-white/60">
-                Frontend Engineer, Full-Stack Contributor &amp; Solution Analyst
+                Full-Stack Engineer &amp; Solution Analyst
               </p>
             </div>
 
-            {/* Metric strip — data fragments */}
-            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] sm:grid-cols-3">
-              {metrics.map((m) => (
-                <div key={m.label} className="bg-void/50 p-5 backdrop-blur-md sm:p-6">
-                  <div className="font-display text-3xl font-bold text-gradient sm:text-4xl">
-                    {m.value}
-                  </div>
-                  <p className="mt-1.5 text-xs uppercase tracking-wider text-white/50">
-                    {m.label}
-                  </p>
+            {/* Impact — headline value spotlight + supporting metrics */}
+            <div className="grid gap-4 md:grid-cols-[1.1fr_1fr]">
+              {/* Featured value */}
+              <div className="relative overflow-hidden rounded-2xl border border-violet-glow/30 bg-violet-core/10 p-6 backdrop-blur-md sm:p-8">
+                <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-violet-glow/25 blur-3xl" />
+                <p className="relative text-[11px] uppercase tracking-[0.25em] text-violet-glow/70">
+                  Forecasted first-year revenue
+                </p>
+                <div className="relative mt-3 flex items-baseline gap-2">
+                  <span className="font-display text-6xl font-bold text-gradient sm:text-7xl">
+                    $14M
+                  </span>
                 </div>
-              ))}
+                <p className="relative mt-2 text-sm text-white/50">
+                  The value this platform is projected to unlock in year one.
+                </p>
+              </div>
+
+              {/* Supporting metrics */}
+              <div className="grid grid-cols-1 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-void/40 backdrop-blur-md sm:grid-cols-3 sm:divide-x sm:divide-y-0 md:grid-cols-1 md:divide-x-0 md:divide-y">
+                {metrics.map((m) => (
+                  <div
+                    key={m.label}
+                    className="flex flex-col justify-center p-5"
+                  >
+                    <div className="font-display text-2xl font-bold text-white">
+                      {m.value}
+                    </div>
+                    <p className="mt-1 text-xs uppercase tracking-wider text-white/45">
+                      {m.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

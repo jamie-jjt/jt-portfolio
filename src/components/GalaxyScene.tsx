@@ -9,7 +9,7 @@ type PointerRef = React.MutableRefObject<{ x: number; y: number }>;
  * The spiral galaxy of points. Colors blend from a violet core out to
  * nebula blue at the edges.
  */
-function GalaxyPoints({ scrollRef }: { scrollRef: ScrollRef }) {
+function GalaxyPoints() {
   const pointsRef = useRef<THREE.Points>(null);
 
   const { positions, colors } = useMemo(() => {
@@ -26,9 +26,10 @@ function GalaxyPoints({ scrollRef }: { scrollRef: ScrollRef }) {
     const insideColor = new THREE.Color('#a855f7');
     const outsideColor = new THREE.Color('#6366f1');
 
+    const minRadius = 0.6; // hollow-ish center so there's no hot core blob
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      const radius = Math.random() * radiusMax;
+      const radius = minRadius + Math.random() * (radiusMax - minRadius);
       const branchAngle = ((i % branches) / branches) * Math.PI * 2;
       const spinAngle = radius * spin;
 
@@ -53,7 +54,12 @@ function GalaxyPoints({ scrollRef }: { scrollRef: ScrollRef }) {
       positions[i3 + 1] = randY;
       positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randZ;
 
-      const mixed = insideColor.clone().lerp(outsideColor, radius / radiusMax);
+      const tt = radius / radiusMax;
+      const mixed = insideColor.clone().lerp(outsideColor, tt);
+      // Slightly dim the innermost particles so the center isn't a hot blob
+      // sitting behind the hero text (arms stay full brightness).
+      const dim = 0.55 + Math.min(1, tt / 0.35) * 0.45;
+      mixed.multiplyScalar(dim);
       colors[i3] = mixed.r;
       colors[i3 + 1] = mixed.g;
       colors[i3 + 2] = mixed.b;
@@ -64,11 +70,10 @@ function GalaxyPoints({ scrollRef }: { scrollRef: ScrollRef }) {
 
   useFrame((_state: RootState, delta: number) => {
     if (!pointsRef.current) return;
-    const scroll = scrollRef.current; // 0 (top of page) -> 1 (bottom)
-    // Gentle constant spin, subtly faster as you travel down
-    pointsRef.current.rotation.y += delta * (0.05 + scroll * 0.12);
-    // Tilt further as you descend, so the galaxy opens up beneath you
-    pointsRef.current.rotation.x = -0.3 - scroll * 0.7;
+    // Keep the original v1 hero tilt fixed; the camera now handles the travel.
+    // Constant gentle spin so the galaxy stays alive.
+    pointsRef.current.rotation.x = -0.3;
+    pointsRef.current.rotation.y += delta * 0.05;
   });
 
   return (
@@ -124,11 +129,11 @@ function Starfield() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.05}
+        size={0.04}
         sizeAttenuation
-        color="#c4b5fd"
+        color="#6d5aa8"
         transparent
-        opacity={0.55}
+        opacity={0.35}
         depthWrite={false}
       />
     </points>
@@ -139,6 +144,45 @@ function Starfield() {
  * Camera travels continuously through space as the whole page scrolls,
  * so scrolling feels like moving deeper into the scene.
  */
+/** Smoothstep for eased interpolation between flight waypoints. */
+function smootherstep(edge0: number, edge1: number, x: number) {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+/**
+ * Cinematic flight path, sampled by scroll (0..1).
+ * WAYPOINT 0 is EXACTLY the v1 hero view — camera [0, 1.2, 6] looking at the
+ * origin — so the hero frame is untouched. The journey unfolds as you scroll:
+ * zooming in and banking through the galaxy across the other sections.
+ */
+const WAYPOINTS = [
+  // pos [x, y, z]          look [x, y, z]          roll
+  // Hero: v1 camera, but look slightly down-left so the bright core sits below
+  // the "Jamie" text area instead of directly behind it.
+  { pos: [0, 1.2, 6], look: [-0.6, -0.8, 0], roll: 0 },
+  { pos: [-3.4, 1.3, 3.4], look: [-0.6, -0.4, -0.4], roll: 0.07 }, // zoom in + bank hard left
+  { pos: [3.6, 0.2, 1.2], look: [0.8, 0.2, -1], roll: -0.09 }, // sweep across into the arms
+  { pos: [-1.6, -1, 0], look: [0, 0.1, -2], roll: 0.06 }, // skim through the plane
+  { pos: [2.4, 1, -2.6], look: [-0.8, 0.2, -1.2], roll: -0.07 }, // rise past the core
+  { pos: [0.8, 1.6, -5], look: [-0.2, 0.3, -2.2], roll: -0.03 }, // ease outward
+  { pos: [0, 1.3, -8.5], look: [0, 0.3, -3.4], roll: 0 }, // contact: deep field
+] as const;
+
+function samplev3(
+  a: readonly number[],
+  b: readonly number[],
+  t: number,
+  out: THREE.Vector3,
+) {
+  out.set(
+    a[0] + (b[0] - a[0]) * t,
+    a[1] + (b[1] - a[1]) * t,
+    a[2] + (b[2] - a[2]) * t,
+  );
+  return out;
+}
+
 function CameraRig({
   scrollRef,
   pointerRef,
@@ -146,27 +190,41 @@ function CameraRig({
   scrollRef: ScrollRef;
   pointerRef: PointerRef;
 }) {
-  useFrame((state: RootState, delta) => {
-    const scroll = scrollRef.current;
+  const pos = useRef(new THREE.Vector3(0, 1.2, 6));
+  const look = useRef(new THREE.Vector3(-0.6, -0.8, 0));
+  const tmpPos = useRef(new THREE.Vector3());
+  const tmpLook = useRef(new THREE.Vector3());
+
+  useFrame((state: RootState) => {
+    const scroll = Math.min(1, Math.max(0, scrollRef.current));
     const px = pointerRef.current.x;
     const py = pointerRef.current.y;
-
-    // Travel: pull back and rise as you descend the page
-    const baseZ = 6 + scroll * 4;
-    const baseY = 1.2 + scroll * 2.5;
-    // Idle drift so it never feels frozen
     const t = state.clock.elapsedTime;
+
+    const segments = WAYPOINTS.length - 1;
+    const scaled = scroll * segments;
+    const i = Math.min(segments - 1, Math.floor(scaled));
+    const localT = smootherstep(i, i + 1, scaled);
+    const a = WAYPOINTS[i];
+    const b = WAYPOINTS[i + 1];
+
+    samplev3(a.pos, b.pos, localT, tmpPos.current);
+    samplev3(a.look, b.look, localT, tmpLook.current);
+
+    // Idle drift + cursor parallax layered on top (kept gentle at the hero).
     const idleX = Math.sin(t * 0.15) * 0.3;
+    const idleY = Math.cos(t * 0.12) * 0.2;
+    tmpPos.current.x += idleX + px * 1.1;
+    tmpPos.current.y += idleY - py * 0.7;
 
-    // Cursor parallax: nudge the camera toward where the pointer is.
-    const targetX = idleX + px * 1.1;
-    const targetY = baseY - py * 0.7;
+    pos.current.lerp(tmpPos.current, 0.05);
+    look.current.lerp(tmpLook.current, 0.05);
 
-    state.camera.position.z += (baseZ - state.camera.position.z) * 0.04;
-    state.camera.position.y += (targetY - state.camera.position.y) * 0.05;
-    state.camera.position.x += (targetX - state.camera.position.x) * 0.05;
-    state.camera.lookAt(0, 0, 0);
-    void delta;
+    state.camera.position.copy(pos.current);
+    state.camera.lookAt(look.current);
+
+    const roll = a.roll + (b.roll - a.roll) * localT;
+    state.camera.rotation.z += (roll - state.camera.rotation.z) * 0.05;
   });
   return null;
 }
@@ -186,7 +244,7 @@ export default function GalaxyScene({
       gl={{ antialias: true, alpha: true }}
     >
       <Starfield />
-      <GalaxyPoints scrollRef={scrollRef} />
+      <GalaxyPoints />
       <CameraRig scrollRef={scrollRef} pointerRef={pointerRef} />
     </Canvas>
   );

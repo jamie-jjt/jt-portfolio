@@ -19,10 +19,10 @@ const training = [
 
 export default function Certifications() {
   return (
-    <Section id="certifications">
+    <Section id="certifications" scrim>
       <div className="mb-16 max-w-2xl">
         <Reveal variant="left">
-          <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+          <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
             Certifications &amp; credentials
           </p>
         </Reveal>

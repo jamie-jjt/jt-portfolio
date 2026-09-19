@@ -38,7 +38,7 @@ export default function Hero() {
       className="relative flex min-h-screen w-full items-center justify-center overflow-hidden"
     >
       {/* Local center scrim so the copy stays readable over the global space bg */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_48%_40%_at_50%_46%,rgba(8,6,15,0.82),rgba(8,6,15,0.35)_55%,transparent_80%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_42%_34%_at_50%_46%,rgba(8,6,15,0.55),rgba(8,6,15,0.2)_55%,transparent_78%)]" />
 
       {/* Decorative orbital rings behind the name, gently breathing */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 -z-0 -translate-x-1/2 -translate-y-1/2">
@@ -59,36 +59,16 @@ export default function Hero() {
         />
       </div>
 
+      {/* Local readability scrim behind the hero copy (stronger on mobile
+          where the galaxy crowds the text). */}
+      <div className="pointer-events-none absolute inset-0 z-[5] bg-[radial-gradient(ellipse_70%_50%_at_50%_52%,rgba(8,6,15,0.78),rgba(8,6,15,0.35)_60%,transparent_85%)] sm:bg-[radial-gradient(ellipse_55%_45%_at_50%_50%,rgba(8,6,15,0.55),transparent_78%)]" />
+
       {/* Hero copy */}
       <div className="relative z-10 flex flex-col items-center px-6 text-center">
         <motion.div variants={container} initial="hidden" animate="show">
-          {/* Availability badge — gradient-ring pill with status structure */}
-          <motion.div variants={item} className="mb-8 flex justify-center">
-            <span className="group relative inline-flex items-center gap-3 rounded-full p-[1px]">
-              {/* gradient ring */}
-              <span className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,rgba(168,85,247,0.6),rgba(99,102,241,0.3),rgba(217,70,239,0.5),rgba(168,85,247,0.6))] opacity-70" />
-              {/* soft glow */}
-              <span className="absolute inset-0 rounded-full bg-violet-core/30 blur-md" />
-              {/* inner pill */}
-              <span className="relative inline-flex items-center gap-2.5 rounded-full bg-void/85 px-4 py-2 backdrop-blur-md">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                <span className="text-xs font-medium tracking-wide text-white/85">
-                  Available for work
-                </span>
-                <span className="h-3 w-px bg-white/15" />
-                <span className="text-xs text-white/50">
-                  Solutions Engineer
-                </span>
-              </span>
-            </span>
-          </motion.div>
-
           <motion.p
             variants={item}
-            className="mb-6 text-xs uppercase tracking-[0.4em] text-violet-glow/80 sm:text-sm"
+            className="mb-5 text-[11px] uppercase tracking-[0.3em] text-violet-glow sm:mb-6 sm:text-sm sm:tracking-[0.4em]"
           >
             Solutions Engineer · Presales · Developer
           </motion.p>
@@ -98,7 +78,7 @@ export default function Hero() {
             variants={nameContainer}
             initial="hidden"
             animate="show"
-            className="font-display text-5xl font-bold leading-[1.02] tracking-tight xs:text-6xl sm:text-7xl md:text-8xl"
+            className="font-display text-5xl font-bold leading-[1.02] tracking-tight text-white [text-shadow:0_2px_30px_rgba(8,6,15,0.9)] xs:text-6xl sm:text-7xl md:text-8xl"
           >
             <span className="block overflow-hidden pb-[0.1em]">
               <motion.span variants={nameWord} className="inline-block">
@@ -106,18 +86,15 @@ export default function Hero() {
               </motion.span>
             </span>
             <span className="block overflow-hidden pb-[0.1em]">
-              <motion.span
-                variants={nameWord}
-                className="inline-block text-gradient"
-              >
-                Teus
+              <motion.span variants={nameWord} className="inline-block">
+                <span className="text-gradient">&ldquo;Jamie&rdquo;</span> Teus
               </motion.span>
             </span>
           </motion.h1>
 
           <motion.p
             variants={item}
-            className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-white/60 md:text-lg"
+            className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-white/70 sm:mt-8 sm:max-w-xl sm:text-base md:text-lg"
           >
             I turn business objectives into cloud, data, and AI solutions — and
             I build them too. From discovery and scoping to the demo that closes
@@ -126,11 +103,11 @@ export default function Hero() {
 
           <motion.div
             variants={item}
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+            className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:items-center sm:gap-4"
           >
             <a
               href="#work"
-              className="group relative overflow-hidden rounded-full bg-nebula-gradient px-8 py-3.5 text-sm font-semibold text-white shadow-glow transition-transform duration-300 hover:scale-[1.03]"
+              className="group relative overflow-hidden rounded-full bg-nebula-gradient px-8 py-3.5 text-center text-sm font-semibold text-white shadow-glow transition-transform duration-300 hover:scale-[1.03]"
             >
               View selected work
             </a>
@@ -141,7 +118,7 @@ export default function Hero() {
               {/* rotating conic-gradient outline */}
               <span className="absolute inset-[-100%] animate-spin-slow bg-[conic-gradient(from_0deg,transparent_0deg,rgba(168,85,247,0.9)_60deg,rgba(99,102,241,0.6)_120deg,transparent_180deg)]" />
               {/* inner button surface */}
-              <span className="relative rounded-full bg-void px-8 py-3.5 text-sm font-semibold text-white/80 backdrop-blur-sm transition-colors duration-300 group-hover:text-white">
+              <span className="relative w-full rounded-full bg-void px-8 py-3.5 text-center text-sm font-semibold text-white/80 backdrop-blur-sm transition-colors duration-300 group-hover:text-white">
                 Get in touch
               </span>
             </a>

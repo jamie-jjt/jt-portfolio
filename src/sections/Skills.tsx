@@ -50,10 +50,10 @@ const groups: SkillGroup[] = [
 
 export default function Skills() {
   return (
-    <Section id="skills">
+    <Section id="skills" scrim>
       <div className="mb-16 max-w-2xl">
         <Reveal variant="left">
-          <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+          <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
             Skills &amp; stack
           </p>
         </Reveal>

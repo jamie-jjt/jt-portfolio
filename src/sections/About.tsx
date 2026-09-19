@@ -11,15 +11,15 @@ const stats = [
 
 export default function About() {
   return (
-    <Section id="about">
+    <Section id="about" scrim>
       {/* Top divider glow */}
       <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-violet-glow/30 to-transparent" />
 
-      <div className="grid gap-16 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
+      <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
         {/* Left: label + heading */}
         <div>
           <Reveal variant="left">
-            <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+            <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
               About
             </p>
           </Reveal>

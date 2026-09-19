@@ -6,6 +6,7 @@ import Hero from './sections/Hero';
 import About from './sections/About';
 import Services from './sections/Services';
 import Work from './sections/Work';
+import Capabilities from './sections/Capabilities';
 import Skills from './sections/Skills';
 import Certifications from './sections/Certifications';
 import Experience from './sections/Experience';
@@ -28,19 +29,16 @@ function App() {
           {/* Hero: space fully visible */}
           <Hero />
 
-          {/* Mid content: a soft scrim keeps text readable while space still
-              shows through faintly. Sits behind these sections only. */}
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-0 -z-10 bg-void/55" />
-            <About />
-            <Services />
-            <Work />
-            <Experience />
-            <Skills />
-            <Certifications />
-          </div>
-
-          {/* Contact: space opens back up for the closing */}
+          {/* No heavy curtain here — the galaxy shows through every section so
+              it reads as one continuous scroll through space. Sections keep
+              their own local scrims/glass for text legibility. */}
+          <About />
+          <Services />
+          <Work />
+          <Capabilities />
+          <Experience />
+          <Skills />
+          <Certifications />
           <Contact />
         </main>
         <Footer />

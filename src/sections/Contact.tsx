@@ -66,17 +66,6 @@ export default function Contact() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.35),transparent_60%)]" />
 
           <div className="relative">
-            {/* Availability status */}
-            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-emerald-400/25 bg-emerald-400/[0.06] px-4 py-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              <span className="text-xs font-medium text-emerald-200/90">
-                Available for new opportunities
-              </span>
-            </div>
-
             <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold leading-tight sm:text-4xl md:text-6xl">
               Let's build the{' '}
               <span className="text-gradient">right solution</span> together.

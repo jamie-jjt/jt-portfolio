@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, animate, type PanInfo } from 'framer-motion';
+import {
+  motion,
+  useMotionValue,
+  animate,
+  useInView,
+  type PanInfo,
+} from 'framer-motion';
 
 export type ServiceIcon =
   | 'search'
@@ -61,7 +67,7 @@ const SWIPE_VELOCITY = 400;
 
 function Card({ s, no }: { s: Service; no: number }) {
   return (
-    <div className="relative flex h-full flex-col gap-8 p-7 sm:flex-row sm:items-stretch sm:p-12">
+    <div className="relative flex h-full flex-col gap-6 p-5 sm:gap-8 sm:flex-row sm:items-stretch sm:p-12">
       {/* Icon plate — top on mobile, right on desktop */}
       <div className="order-1 flex items-center gap-4 sm:order-2 sm:w-52 sm:shrink-0 sm:items-center sm:justify-center">
         <div className="relative flex items-center justify-center">
@@ -125,6 +131,9 @@ export default function ServicesSlider({ services }: { services: Service[] }) {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(0);
+  // Only auto-advance while the slider is actually on screen, so it always
+  // starts from card 1 when the user scrolls to it (not mid-cycle).
+  const inView = useInView(containerRef, { amount: 0.4 });
   // Track offset in px. The track holds all cards; we translate by -index*width.
   const x = useMotionValue(0);
 
@@ -157,11 +166,11 @@ export default function ServicesSlider({ services }: { services: Service[] }) {
   };
 
   useEffect(() => {
-    if (paused || dragging) return;
+    if (paused || dragging || !inView) return;
     const id = setInterval(() => goTo((index + 1) % count), AUTO_MS);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paused, dragging, index, count]);
+  }, [paused, dragging, inView, index, count]);
 
   const onDragStart = () => setDragging(true);
 
@@ -187,7 +196,7 @@ export default function ServicesSlider({ services }: { services: Service[] }) {
     >
       <div
         ref={containerRef}
-        className="relative min-h-[440px] overflow-hidden rounded-3xl border border-white/10 bg-void/70 backdrop-blur-xl sm:min-h-[360px]"
+        className="relative min-h-[360px] overflow-hidden rounded-3xl border border-white/10 bg-void/70 backdrop-blur-xl"
       >
         {/* themed ambient glows + grid texture (static frame) */}
         <div className="pointer-events-none absolute -right-24 -top-24 z-10 h-72 w-72 rounded-full bg-violet-core/20 blur-3xl" />
@@ -197,12 +206,12 @@ export default function ServicesSlider({ services }: { services: Service[] }) {
         {/* Progress bar */}
         <div className="absolute inset-x-0 top-0 z-20 h-0.5 bg-white/5">
           <motion.div
-            key={index + (paused || dragging ? '-hold' : '')}
+            key={index + (paused || dragging || !inView ? '-hold' : '')}
             className="h-full bg-nebula-gradient"
             initial={{ width: '0%' }}
-            animate={{ width: paused || dragging ? '0%' : '100%' }}
+            animate={{ width: paused || dragging || !inView ? '0%' : '100%' }}
             transition={{
-              duration: paused || dragging ? 0 : AUTO_MS / 1000,
+              duration: paused || dragging || !inView ? 0 : AUTO_MS / 1000,
               ease: 'linear',
             }}
           />
@@ -211,7 +220,7 @@ export default function ServicesSlider({ services }: { services: Service[] }) {
         {/* Draggable track: all cards in a row, moves as one so the next card
             is revealed while dragging. */}
         <motion.div
-          className="flex h-full min-h-[440px] cursor-grab touch-pan-y active:cursor-grabbing sm:min-h-[360px]"
+          className="flex h-full min-h-[360px] cursor-grab touch-pan-y active:cursor-grabbing"
           style={{ x }}
           drag="x"
           dragConstraints={{

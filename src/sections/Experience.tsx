@@ -42,10 +42,10 @@ const entries: Entry[] = [
 
 export default function Experience() {
   return (
-    <Section id="experience">
+    <Section id="experience" scrim>
       <div className="mb-14 max-w-2xl">
         <Reveal variant="left">
-          <p className="mb-6 text-xs uppercase tracking-[0.35em] text-violet-glow/70">
+          <p className="mb-6 text-xs font-medium uppercase tracking-[0.35em] text-violet-glow">
             The journey
           </p>
         </Reveal>

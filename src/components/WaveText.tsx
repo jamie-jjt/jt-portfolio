@@ -1,4 +1,5 @@
 import { motion, type Variants } from 'framer-motion';
+import { useMemo } from 'react';
 
 /**
  * Reveals text word-by-word with a rising "wave", each word masked by its
@@ -57,7 +58,10 @@ export default function WaveText({
   once?: boolean;
 }) {
   const tokens = tokenize(text);
-  const MotionTag = motion(Tag as 'p');
+  // Memoize so the motion component identity stays stable across re-renders.
+  // (Creating it inline made React remount the node on every parent re-render,
+  // which replayed the animation on unrelated state changes like slider moves.)
+  const MotionTag = useMemo(() => motion(Tag as 'p'), [Tag]);
 
   return (
     <MotionTag

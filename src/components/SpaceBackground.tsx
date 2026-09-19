@@ -43,8 +43,11 @@ export default function SpaceBackground() {
         <GalaxyScene scrollRef={scrollProgress} pointerRef={pointer} />
       </Suspense>
 
-      {/* Global grain + a soft top-to-bottom scrim for consistent legibility */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-void/30 via-transparent to-void/50" />
+      {/* Light, even legibility wash — keeps text readable while the galaxy
+          stays clearly visible behind every section (no heavy curtain). */}
+      <div className="pointer-events-none absolute inset-0 bg-void/25" />
+      {/* Gentle top/bottom fade for depth as you travel */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-void/40 via-transparent to-void/45" />
     </div>
   );
 }
