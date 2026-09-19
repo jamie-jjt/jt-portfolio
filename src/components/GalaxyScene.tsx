@@ -5,6 +5,28 @@ import * as THREE from 'three';
 type ScrollRef = React.MutableRefObject<number>;
 type PointerRef = React.MutableRefObject<{ x: number; y: number }>;
 
+/** Soft round glow sprite so points read as luminous stardust, not squares. */
+let softTex: THREE.CanvasTexture | null = null;
+function getSoftTexture() {
+  if (softTex) return softTex;
+  const size = 64;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d')!;
+  const g = ctx.createRadialGradient(
+    size / 2, size / 2, 0,
+    size / 2, size / 2, size / 2,
+  );
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.4, 'rgba(255,255,255,0.5)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  softTex = new THREE.CanvasTexture(c);
+  softTex.needsUpdate = true;
+  return softTex;
+}
+
 /**
  * The spiral galaxy of points. Colors blend from a violet core out to
  * nebula blue at the edges.
@@ -26,10 +48,9 @@ function GalaxyPoints() {
     const insideColor = new THREE.Color('#a855f7');
     const outsideColor = new THREE.Color('#6366f1');
 
-    const minRadius = 0.6; // hollow-ish center so there's no hot core blob
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      const radius = minRadius + Math.random() * (radiusMax - minRadius);
+      const radius = Math.random() * radiusMax;
       const branchAngle = ((i % branches) / branches) * Math.PI * 2;
       const spinAngle = radius * spin;
 
@@ -54,12 +75,7 @@ function GalaxyPoints() {
       positions[i3 + 1] = randY;
       positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randZ;
 
-      const tt = radius / radiusMax;
-      const mixed = insideColor.clone().lerp(outsideColor, tt);
-      // Slightly dim the innermost particles so the center isn't a hot blob
-      // sitting behind the hero text (arms stay full brightness).
-      const dim = 0.55 + Math.min(1, tt / 0.35) * 0.45;
-      mixed.multiplyScalar(dim);
+      const mixed = insideColor.clone().lerp(outsideColor, radius / radiusMax);
       colors[i3] = mixed.r;
       colors[i3 + 1] = mixed.g;
       colors[i3 + 2] = mixed.b;
@@ -83,13 +99,15 @@ function GalaxyPoints() {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.02}
+        size={0.05}
         sizeAttenuation
+        map={getSoftTexture()}
+        alphaMap={getSoftTexture()}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         vertexColors
         transparent
-        opacity={0.9}
+        opacity={0.95}
       />
     </points>
   );
@@ -129,12 +147,15 @@ function Starfield() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.04}
+        size={0.09}
         sizeAttenuation
-        color="#6d5aa8"
+        map={getSoftTexture()}
+        alphaMap={getSoftTexture()}
+        color="#8b7fd4"
         transparent
-        opacity={0.35}
+        opacity={0.45}
         depthWrite={false}
+        blending={THREE.AdditiveBlending}
       />
     </points>
   );
@@ -229,6 +250,22 @@ function CameraRig({
   return null;
 }
 
+/** The very soft circular glow at the galaxy's center. */
+function Core() {
+  return (
+    <sprite position={[0, 0, 0]} scale={2.4}>
+      <spriteMaterial
+        map={getSoftTexture()}
+        color="#c9a9ff"
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </sprite>
+  );
+}
+
 export default function GalaxyScene({
   scrollRef,
   pointerRef,
@@ -244,6 +281,7 @@ export default function GalaxyScene({
       gl={{ antialias: true, alpha: true }}
     >
       <Starfield />
+      <Core />
       <GalaxyPoints />
       <CameraRig scrollRef={scrollRef} pointerRef={pointerRef} />
     </Canvas>
