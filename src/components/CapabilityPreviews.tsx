@@ -115,6 +115,48 @@ export function GravitonPreview({ active }: { active: boolean }) {
   );
 }
 
+/** DevPath — interactive learning platform with an in-browser code editor. */
+export function DevPathPreview({ active }: { active: boolean }) {
+  return (
+    <Laptop>
+      <div className="flex h-full">
+        {/* lesson sidebar */}
+        <div className="hidden w-24 shrink-0 flex-col gap-2 border-r border-white/8 bg-white/[0.02] p-2.5 sm:flex">
+          <span className="text-[8px] font-bold text-white">◇ DevPath</span>
+          {['Basics', 'Python', 'SQL', 'DevOps', 'AI/ML'].map((l, i) => (
+            <div
+              key={l}
+              className={`flex items-center gap-1 text-[8px] ${i === 1 ? 'text-violet-glow' : 'text-white/45'}`}
+            >
+              <span className={`h-1 w-1 rounded-full ${i === 1 ? 'bg-violet-glow' : 'bg-white/20'}`} />
+              {l}
+            </div>
+          ))}
+        </div>
+        {/* editor + run */}
+        <div className="flex flex-1 flex-col">
+          <div className="flex items-center justify-between border-b border-white/8 px-3 py-1.5 text-[8px]">
+            <span className="text-white/60">lesson_02 · Python</span>
+            <span className="rounded bg-nebula-gradient px-2 py-0.5 font-semibold text-white">▶ Run</span>
+          </div>
+          <div className="flex-1 p-3 font-mono text-[8px] leading-relaxed">
+            <div><span className="text-violet-glow">def</span> <span className="text-white/80">greet</span>(name):</div>
+            <div className="pl-3 text-white/60">return <span className="text-emerald-300">f"Hi, {'{name}'}"</span></div>
+            <div className="mt-1 text-white/80">print(greet(<span className="text-emerald-300">"Jamie"</span>))</div>
+            {/* console output */}
+            <div className="mt-2 rounded bg-black/40 p-1.5">
+              <span className="text-white/40">›</span>{' '}
+              <span className={active ? 'text-emerald-300' : 'text-emerald-300/60'}>
+                Hi, Jamie
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Laptop>
+  );
+}
+
 /* ---------------- Concept mockups ---------------- */
 
 export function DashboardPreview() {

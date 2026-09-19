@@ -14,6 +14,7 @@ import WaveText from '../components/WaveText';
 import {
   SpinWheelPreview,
   GravitonPreview,
+  DevPathPreview,
   DashboardPreview,
   StorePreview,
   GamePreview,
@@ -50,6 +51,16 @@ const capabilities: Capability[] = [
     tags: ['JavaScript', 'Weighted engine', 'Canvas'],
     preview: (a) => <SpinWheelPreview active={a} />,
     link: 'https://github.com/jamie-jjt/spinning-wheel',
+  },
+  {
+    kind: 'project',
+    label: 'DevPath',
+    eyebrow: 'Built · Live project',
+    description:
+      'An interactive learning platform that takes IT/CS students from zero to DevOps-ready — 12 tracks, 100+ lessons, and in-browser code runners for JavaScript, Python, SQL, and HTML.',
+    tags: ['Next.js', 'TypeScript', 'Monaco', 'Pyodide (WASM)'],
+    preview: (a) => <DevPathPreview active={a} />,
+    link: 'https://jamie-jjt.github.io/dev-path/',
   },
   {
     kind: 'concept',
