@@ -88,22 +88,18 @@ export default function Preloader() {
           </div>
 
           {/* Counting percentage */}
-          <div className="relative font-display text-6xl font-bold tracking-tight text-white sm:text-7xl">
+          <div className="relative font-display text-8xl font-bold leading-none tracking-tight text-white sm:text-9xl">
             {pct}
             <span className="text-gradient">%</span>
           </div>
 
           {/* progress bar */}
-          <div className="relative mt-6 h-px w-56 overflow-hidden bg-white/10">
+          <div className="relative mt-8 h-px w-72 overflow-hidden bg-white/10 sm:w-80">
             <motion.div
               className="h-full bg-nebula-gradient"
               style={{ width: `${pct}%` }}
             />
           </div>
-
-          <p className="relative mt-5 text-xs uppercase tracking-[0.35em] text-white/40">
-            Entering the galaxy
-          </p>
         </motion.div>
       )}
     </AnimatePresence>
