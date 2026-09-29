@@ -1,4 +1,5 @@
 import SmoothScroll from './components/SmoothScroll';
+import Preloader from './components/Preloader';
 import SpaceBackground from './components/SpaceBackground';
 import Cursor from './components/Cursor';
 import Nav from './components/Nav';
@@ -16,6 +17,9 @@ import Footer from './components/Footer';
 function App() {
   return (
     <SmoothScroll>
+      {/* Themed loading screen with counting % (fades out when ready) */}
+      <Preloader />
+
       {/* Custom circle cursor (desktop only) */}
       <Cursor />
 
