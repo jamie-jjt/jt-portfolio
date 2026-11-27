@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { MeshGradient } from '@paper-design/shaders-react';
-import { animate, createScope, stagger } from 'animejs';
 import {
   AnimatePresence,
   motion,
@@ -10,6 +9,7 @@ import {
   useTransform,
 } from 'motion/react';
 import Nav from './components/Nav';
+import Preloader from './components/Preloader';
 import {
   BlueThread,
   MagneticLink,
@@ -50,91 +50,120 @@ function SectionIntro({
   );
 }
 
-function Hero() {
+function Hero({ ready }: { ready: boolean }) {
   const ref = useRef<HTMLElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const titleX = useTransform(scrollYProgress, [0, 1], ['0%', '-16%']);
-  const titleScale = useTransform(scrollYProgress, [0, 1], [1, 0.72]);
-  const shaderY = useTransform(scrollYProgress, [0, 1], ['0%', '24%']);
-  const shaderScale = useTransform(scrollYProgress, [0, 1], [1, 1.28]);
-  const shaderOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const titleX = useTransform(scrollYProgress, [0, 0.52], ['0%', '-12%']);
+  const titleScale = useTransform(scrollYProgress, [0, 0.52], [1, 0.78]);
+  const titleOpacity = useTransform(scrollYProgress, [0.28, 0.62], [1, 0]);
+  const shaderY = useTransform(scrollYProgress, [0, 0.58], ['0%', '18%']);
+  const shaderScale = useTransform(scrollYProgress, [0, 0.58], [1, 1.22]);
+  const shaderOpacity = useTransform(scrollYProgress, [0.32, 0.68], [1, 0]);
+  const apertureWidth = useTransform(scrollYProgress, [0.42, 0.93], ['11vw', '100vw']);
+  const apertureHeight = useTransform(scrollYProgress, [0.42, 0.93], ['8vh', '100vh']);
+  const apertureRight = useTransform(scrollYProgress, [0.42, 0.93], ['18vw', '0vw']);
+  const apertureBottom = useTransform(scrollYProgress, [0.42, 0.93], ['3.5vh', '0vh']);
+  const apertureRadius = useTransform(scrollYProgress, [0.42, 0.82], [16, 0]);
+  const apertureTitleScale = useTransform(scrollYProgress, [0.48, 0.92], [0.12, 1]);
+  const apertureLabelOpacity = useTransform(scrollYProgress, [0.42, 0.72], [1, 0]);
 
-  useEffect(() => {
-    if (!textRef.current || reduceMotion) return;
-    const scope = createScope({ root: textRef }).add(() => {
-      animate('.hero-token', {
-        opacity: [0, 1],
-        y: ['1.1em', '0em'],
-        rotate: [4, 0],
-        delay: stagger(90),
-        duration: 1050,
-        ease: 'outExpo',
-      });
-      animate('.hero-meta', {
-        opacity: [0, 1],
-        y: [20, 0],
-        delay: stagger(70, { start: 650 }),
-        duration: 850,
-        ease: 'outCubic',
-      });
-    });
-    return () => scope.revert();
-  }, [reduceMotion]);
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.13, delayChildren: 0.08 } },
+  };
+  const slide = {
+    hidden: { y: '115%', opacity: 0 },
+    show: { y: '0%', opacity: 1, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const } },
+  };
 
   return (
     <section id="home" className="hero" ref={ref}>
-      <motion.div
-        className="hero-shader"
-        style={{ y: shaderY, scale: shaderScale, opacity: shaderOpacity }}
-        aria-hidden="true"
-      >
-        <MeshGradient
-          width="100%"
-          height="100%"
-          colors={['#F7FBFF', '#DCEEFF', '#0067FF', '#F04E23', '#0757D9', '#A9D6FF']}
-          distortion={0.82}
-          swirl={0.34}
-          grainMixer={0.12}
-          grainOverlay={0.06}
-          speed={reduceMotion ? 0 : 0.22}
-          scale={1.15}
-          maxPixelCount={1200000}
-        />
-      </motion.div>
-      <div className="hero-grid" aria-hidden="true" />
-      <div className="hero-meta-row hero-meta">
-        <p>Solutions Engineer<br />Presales · Developer</p>
-        <p>Cainta, Rizal, PH<br />GMT +08:00</p>
-        <p className="hero-status"><i /> Available for conversations</p>
-      </div>
-      <motion.div
-        ref={textRef}
-        className="hero-copy"
-        style={{ x: titleX, scale: titleScale, transformOrigin: 'left center' }}
-      >
-        <h1 aria-label="Jeremie Jamie Teus">
-          <span className="hero-line"><span className="hero-token">Jeremie</span></span>
-          <span className="hero-line hero-line-offset">
-            <span className="hero-token hero-nickname">“Jamie”</span>
-            <span className="hero-token">Teus</span>
-          </span>
-        </h1>
-        <p className="hero-deck hero-meta">
+      <div className="hero-stage">
+        <motion.div
+          className="hero-shader"
+          style={{ y: shaderY, scale: shaderScale, opacity: shaderOpacity }}
+          initial={{ clipPath: 'polygon(100% 0,100% 0,100% 100%,100% 100%,100% 100%,100% 0)' }}
+          animate={ready ? { clipPath: 'polygon(15% 0,100% 0,100% 82%,78% 100%,0 100%,0 22%)' } : undefined}
+          transition={{ duration: 1.1, delay: 0.1, ease: [0.76, 0, 0.24, 1] }}
+          aria-hidden="true"
+        >
+          <MeshGradient
+            width="100%"
+            height="100%"
+            colors={['#F7FBFF', '#DCEEFF', '#0067FF', '#0757D9', '#A9D6FF']}
+            distortion={0.82}
+            swirl={0.34}
+            grainMixer={0.12}
+            grainOverlay={0.06}
+            speed={reduceMotion ? 0 : 0.22}
+            scale={1.15}
+            maxPixelCount={1200000}
+          />
+        </motion.div>
+        <div className="hero-grid" aria-hidden="true" />
+        <motion.div
+          className="hero-meta-row"
+          variants={container}
+          initial="hidden"
+          animate={ready ? 'show' : 'hidden'}
+        >
+          <motion.p variants={slide}>Solutions Engineer<br />Presales · Developer</motion.p>
+          <motion.p variants={slide}>Cainta, Rizal, PH<br />GMT +08:00</motion.p>
+          <motion.p variants={slide} className="hero-status"><i /> Available for conversations</motion.p>
+        </motion.div>
+        <motion.div
+          className="hero-copy"
+          style={{ x: titleX, scale: titleScale, opacity: titleOpacity, transformOrigin: 'left center' }}
+        >
+          <motion.h1
+            aria-label="Jeremie Jamie Teus"
+            variants={container}
+            initial="hidden"
+            animate={ready ? 'show' : 'hidden'}
+          >
+            <span className="hero-line"><motion.span variants={slide} className="hero-token">Jeremie</motion.span></span>
+            <span className="hero-line hero-line-offset">
+              <motion.span variants={slide} className="hero-token hero-nickname">Jamie</motion.span>
+              <motion.span variants={slide} className="hero-token">Teus</motion.span>
+            </span>
+          </motion.h1>
+        </motion.div>
+        <motion.p
+          className="hero-deck"
+          initial={{ opacity: 0, x: 60 }}
+          animate={ready ? { opacity: 1, x: 0 } : undefined}
+          transition={{ duration: 0.8, delay: 0.72, ease: [0.16, 1, 0.3, 1] }}
+        >
           I turn business objectives into cloud, data, and AI solutions — and I build them too.
           From discovery and scoping to the demo that closes the room, and the React/TypeScript app behind it.
-        </p>
-      </motion.div>
-      <div className="hero-bottom hero-meta">
-        <MagneticLink href="#work" className="round-link">
-          <span>Explore the work</span><b>↓</b>
-        </MagneticLink>
-        <div className="hero-coordinate">
-          <span>SCROLL TO TRACE</span>
-          <i />
-        </div>
-        <span>PORTFOLIO / 2026</span>
+        </motion.p>
+        <motion.div
+          className="hero-bottom"
+          initial={{ opacity: 0, y: 24 }}
+          animate={ready ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 0.7, delay: 1.05 }}
+        >
+          <MagneticLink href="#work" className="round-link">
+            <span>Explore the work</span><b>↓</b>
+          </MagneticLink>
+          <span>PORTFOLIO / 2026</span>
+        </motion.div>
+        <motion.div
+          className="about-aperture"
+          style={{
+            width: apertureWidth,
+            height: apertureHeight,
+            right: apertureRight,
+            bottom: apertureBottom,
+            borderRadius: apertureRadius,
+          }}
+          aria-hidden="true"
+        >
+          <motion.span style={{ opacity: apertureLabelOpacity }}>NEXT / 01</motion.span>
+          <motion.strong style={{ scale: apertureTitleScale }}>About</motion.strong>
+          <motion.i style={{ opacity: apertureLabelOpacity }}>SCROLL TO OPEN ↘</motion.i>
+        </motion.div>
       </div>
     </section>
   );
@@ -155,8 +184,8 @@ function About() {
           <span>Listen<br />Translate<br />Build</span>
         </aside>
         <div className="about-story">
-          <ScrollWords text="I'm a Solutions Engineer in technical presales and solution consulting across the IT distribution space. I listen closely during discovery, decompose what a customer actually needs, and map it to the right cloud, data, and AI solutions." />
-          <ScrollWords text="I translate business objectives into solution approaches, then present them to technical teams and executives — through scoping, demos, and enablement. I'm also hands-on: I built a public-sector cloud application end to end with React, TypeScript, Laravel, and AWS." />
+          <ScrollWords text="I work where business questions become technical decisions. I listen for what a customer actually needs, then map it to practical cloud, data, and AI solutions." />
+          <ScrollWords text="I carry that thinking into demos, scoping, enablement, and code — from executive conversations to hands-on delivery with React, TypeScript, Laravel, and AWS." />
         </div>
       </div>
       <div className="stat-ribbon">
@@ -508,21 +537,24 @@ function Contact() {
       </div>
       <div className="footer-line">
         <span>© {new Date().getFullYear()} Jeremie Judith R. Teus</span>
-        <span>Built with React · Motion · Anime.js · Paper Shaders</span>
+        <span>Built with React · Motion · Paper Shaders</span>
         <a href="#home">Back to top ↑</a>
       </div>
     </footer>
   );
 }
 
-export default function App() {
+function App() {
+  const [ready, setReady] = useState(false);
+
   return (
     <SmoothScroll>
+      <Preloader onComplete={() => setReady(true)} />
       <a className="skip-link" href="#about">Skip to content</a>
       <BlueThread />
       <Nav />
       <main>
-        <Hero />
+        <Hero ready={ready} />
         <About />
         <Services />
         <Work />
@@ -535,3 +567,5 @@ export default function App() {
     </SmoothScroll>
   );
 }
+
+export default App;

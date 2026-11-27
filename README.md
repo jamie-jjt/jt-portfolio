@@ -5,8 +5,7 @@ A highly interactive, scroll-driven portfolio for a Solutions Engineer. The visu
 ## Stack
 
 - **Vite + React 19 + TypeScript** — application and build tooling
-- **Motion for React** — scroll-linked transforms, layout transitions, section reveals, and pointer interactions
-- **Anime.js** — staged hero typography and animation timelines
+- **Motion for React** — loading sequence, staggered hero choreography, scroll-linked transforms, layout transitions, section reveals, and pointer interactions
 - **Paper Shaders** — the animated WebGL mesh gradient in the hero
 - **Lenis** — smooth scrolling, disabled automatically for reduced-motion users
 - **CSS** — responsive visual system, grids, sticky horizontal storytelling, and reduced-motion fallbacks

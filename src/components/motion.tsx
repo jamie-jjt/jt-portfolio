@@ -140,41 +140,16 @@ const threadPath =
 export function BlueThread() {
   const { scrollYProgress } = useScroll();
   const smooth = useSpring(scrollYProgress, { stiffness: 85, damping: 24, mass: 0.45 });
-  const travelerX = useTransform(
-    smooth,
-    [0, 0.12, 0.27, 0.43, 0.58, 0.74, 0.9, 1],
-    ['84vw', '64vw', '16vw', '72vw', '32vw', '78vw', '24vw', '82vw'],
-  );
-  const travelerScale = useTransform(smooth, [0, 0.08, 0.94, 1], [0.72, 1, 1, 1.2]);
-  const travelerRotate = useTransform(
-    smooth,
-    [0, 0.12, 0.27, 0.43, 0.58, 0.74, 0.9, 1],
-    [12, -10, 14, -12, 9, -8, 12, 0],
-  );
 
   return (
-    <>
-      <svg
-        className="thread-canvas"
-        viewBox="0 0 1440 10000"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path className="thread-ghost" d={threadPath} />
-        <motion.path className="thread-live" d={threadPath} style={{ pathLength: smooth }} />
-      </svg>
-      <motion.div
-        className="thread-traveler"
-        aria-hidden="true"
-        style={{ left: travelerX, scale: travelerScale, rotate: travelerRotate }}
-      >
-        <i className="tracer-tail" />
-        <svg viewBox="0 0 58 36">
-          <path className="tracer-body" d="M3 18 52 3 39 33 29 21 3 18Z" />
-          <path className="tracer-fold" d="m29 21 23-18-31 15" />
-        </svg>
-        <small>TRACE</small>
-      </motion.div>
-    </>
+    <svg
+      className="thread-canvas"
+      viewBox="0 0 1440 10000"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path className="thread-ghost" d={threadPath} />
+      <motion.path className="thread-live" d={threadPath} style={{ pathLength: smooth }} />
+    </svg>
   );
 }
