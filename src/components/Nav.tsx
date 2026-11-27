@@ -38,7 +38,12 @@ export default function Nav() {
     <header className="site-header">
       <motion.div className="header-progress" style={{ scaleX }} />
       <a className="brand" href="#home" aria-label="Jamie Teus, back to top">
-        JT<span>↘</span>
+        <svg className="brand-mark" viewBox="0 0 46 34" aria-hidden="true">
+          <path d="M3 3h18v18c0 7-4 10-11 10H4v-7h5c3 0 4-1 4-4V10H3V3Z" />
+          <path d="M23 3h20v7h-6v21h-8V10h-6V3Z" />
+          <path className="brand-cut" d="M7 29 39 5" />
+        </svg>
+        <span className="brand-word"><strong>Jamie</strong><small>Teus</small></span>
       </a>
       <div className="chapter-indicator" aria-live="polite">
         <span>Now viewing</span>

@@ -93,7 +93,7 @@ function Hero() {
         <MeshGradient
           width="100%"
           height="100%"
-          colors={['#F7FBFF', '#DCEEFF', '#0067FF', '#0757D9', '#A9D6FF']}
+          colors={['#F7FBFF', '#DCEEFF', '#0067FF', '#F04E23', '#0757D9', '#A9D6FF']}
           distortion={0.82}
           swirl={0.34}
           grainMixer={0.12}
