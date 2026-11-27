@@ -1,15 +1,28 @@
-# Jeremie Judith R. Teus — Portfolio
+# Jeremie Judith R. Teus — Portfolio V2
 
-A black/violet galaxy-themed portfolio for a Solutions Engineer. Built with a
-smooth, animated, agency-landing-page feel.
+A highly interactive, scroll-driven portfolio for a Solutions Engineer. The visual system uses a bright blue-and-white technical editorial direction and a continuous “Blue Thread” that traces the page as the visitor scrolls.
 
 ## Stack
 
-- **Vite + React + TypeScript** — build tooling and framework
-- **Tailwind CSS** — styling (custom galaxy palette)
-- **Framer Motion** — scroll reveals, transitions, micro-interactions
-- **Lenis** — smooth momentum scrolling
-- **React Three Fiber + drei** — the 3D particle galaxy in the hero (lazy-loaded)
+- **Vite + React 19 + TypeScript** — application and build tooling
+- **Motion for React** — scroll-linked transforms, layout transitions, section reveals, and pointer interactions
+- **Anime.js** — staged hero typography and animation timelines
+- **Paper Shaders** — the animated WebGL mesh gradient in the hero
+- **Lenis** — smooth scrolling, disabled automatically for reduced-motion users
+- **CSS** — responsive visual system, grids, sticky horizontal storytelling, and reduced-motion fallbacks
+
+## Experience structure
+
+1. Animated identity introduction
+2. Scroll-revealed About narrative
+3. Interactive services console
+4. Pinned horizontal case study
+5. Projects and capabilities explorer
+6. Experience route map
+7. Interactive skills network
+8. Credentials and contact circuit
+
+All content from the original portfolio is retained and reorganized into the new experience.
 
 ## Local development
 
@@ -18,49 +31,17 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints (default http://localhost:5173).
+Open the URL printed by Vite, normally `http://localhost:5173`.
 
-## Production build
-
-```bash
-npm run build      # outputs to dist/
-npm run preview    # preview the production build locally
-```
-
-## Deploying to Vercel
-
-This is a static Vite SPA, so Vercel hosts it on the free tier easily.
-
-1. Push this project to a GitHub repository.
-2. In Vercel, **Add New → Project** and import the repo.
-3. Vercel auto-detects the Vite framework. The included `vercel.json` sets:
-   - build command: `npm run build`
-   - output directory: `dist`
-   - SPA rewrites so anchor links work on refresh
-4. Deploy. Every push to the main branch redeploys automatically.
-
-Alternatively, deploy from the CLI:
+## Validation
 
 ```bash
-npm i -g vercel
-vercel          # preview deploy
-vercel --prod   # production deploy
+npm run lint
+npm run build
 ```
 
-## Structure
+The production build is written to `dist/`.
 
-```
-src/
-  components/     # Nav, Footer, SmoothScroll, GalaxyScene, Reveal, Section
-  sections/       # Hero, About, Services, Work, Experience, Skills, Certifications, Contact
-  index.css       # Tailwind + global theme
-  App.tsx         # composes the sections
-```
+## Deployment
 
-## Customizing
-
-- **Colors**: edit the palette in `tailwind.config.js`.
-- **Content**: each section lives in `src/sections/` with its data at the top of the file.
-- **Project screenshot**: the Selected Work banner uses an animated gradient
-  placeholder — drop a real screenshot into the banner in `src/sections/Work.tsx`
-  for a stronger case study.
+The included `vercel.json` configures this repository as a static Vite SPA. Import the repository in Vercel or deploy it through the Vercel CLI.

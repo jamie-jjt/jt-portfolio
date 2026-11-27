@@ -1,12 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#a855f7"/>
-      <stop offset="0.5" stop-color="#6366f1"/>
-      <stop offset="1" stop-color="#d946ef"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="#08060f"/>
-  <text x="15" y="22" font-family="Verdana, Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#ffffff">JT</text>
-  <circle cx="25" cy="21" r="2" fill="url(#g)"/>
+  <rect width="32" height="32" rx="7" fill="#f7fbff"/>
+  <path d="M5 7h16v4h-6v14h-4V11H5V7Z" fill="#071a3d"/>
+  <path d="M19 7h8v12c0 4.2-2.3 6.5-6.6 6.5-1.5 0-2.8-.3-3.9-.8l1.2-3.6c.7.3 1.4.5 2.2.5 1.9 0 2.8-.9 2.8-3V11H19V7Z" fill="#0757d9"/>
+  <circle cx="26" cy="26" r="2.5" fill="#0067ff"/>
 </svg>

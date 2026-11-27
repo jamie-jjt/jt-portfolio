@@ -1,12 +1,537 @@
-import {useEffect,useRef} from 'react'
-import {Canvas,useFrame} from '@react-three/fiber'
-import {Environment,Lightformer} from '@react-three/drei'
-import {Group} from 'three'
-import gsap from 'gsap'
-import {ScrollTrigger} from 'gsap/ScrollTrigger'
-import Lenis from 'lenis'
-gsap.registerPlugin(ScrollTrigger)
-function Sculpture(){const ref=useRef<Group>(null);useFrame(({pointer,clock})=>{if(!ref.current)return;const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const progress=Math.min(window.scrollY/window.innerHeight,1.5);ref.current.rotation.y=reduced?.4:clock.elapsedTime*.06+pointer.x*.25+progress*1.8;ref.current.rotation.x=.35+pointer.y*.12;ref.current.children.forEach((child,i)=>{const row=Math.floor(i/3)-1;const col=i%3-1;child.position.set(col*(.88+progress*.7),row*(.88+progress*.7),Math.sin(i*2)*progress*.7);child.rotation.z=progress*(i%2?1:-1)*.4})});return <group ref={ref} rotation={[.35,.4,-.25]}>{Array.from({length:9},(_,i)=><mesh key={i} position={[(i%3-1)*.88,(Math.floor(i/3)-1)*.88,0]}><boxGeometry args={[.72,.72,.72]}/><meshStandardMaterial color={i===4?'#315bff':'#b7bdc8'} metalness={.95} roughness={.2}/></mesh>)}</group>}
+import { useEffect, useRef, useState } from 'react';
+import { MeshGradient } from '@paper-design/shaders-react';
+import { animate, createScope, stagger } from 'animejs';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'motion/react';
+import Nav from './components/Nav';
+import {
+  BlueThread,
+  MagneticLink,
+  Reveal,
+  ScrollWords,
+  SmoothScroll,
+} from './components/motion';
+import {
+  capabilities,
+  certifications,
+  contactLinks,
+  experience,
+  services,
+  skillGroups,
+  training,
+  workFeatures,
+} from './data';
 
-const projects=[{name:'Cloud Service Fulfillment',type:'01 / ENTERPRISE PLATFORM',text:'Connecting requests, approvals, pricing, and downstream processing in a public-sector cloud platform.',stack:'React · TypeScript · Laravel · MongoDB · AWS',details:'My contribution spanned core business workflows, multi-currency pricing calculations, server-side file parsing and preview flows, and reusable frontend interfaces.'},{name:'Graviton Converter',type:'02 / DEVELOPER TOOL',text:'A migration tool for moving x86/x64 projects toward AWS Graviton and ARM64.',stack:'React · TypeScript · Node.js · Docker · AWS',details:'Scans source code for compatibility, supports conversion workflows, and validates builds through Docker.',url:'https://github.com/jamie-jjt/graviton-converter'}]
-export default function App(){const root=useRef<HTMLDivElement>(null);useEffect(()=>{const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const lenis=reduced?null:new Lenis();let frame=0;const raf=(time:number)=>{lenis?.raf(time);frame=requestAnimationFrame(raf)};if(lenis)frame=requestAnimationFrame(raf);const ctx=gsap.context(()=>{if(reduced)return;gsap.from('.hero h1',{y:140,opacity:0,duration:1.5,ease:'power4.out'});gsap.to('.hero h1',{xPercent:-18,scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1}});gsap.to('.scene',{scale:1.35,opacity:0,scrollTrigger:{trigger:'.manifesto',start:'top center',end:'bottom center',scrub:1}});gsap.utils.toArray<HTMLElement>('.reveal').forEach(el=>gsap.from(el,{y:70,opacity:0,scrollTrigger:{trigger:el,start:'top 90%'},duration:1,ease:'power3.out'}))},root);return()=>{ctx.revert();lenis?.destroy();cancelAnimationFrame(frame)}},[]);return <div ref={root}><a className="skip" href="#work">Skip to work</a><header><a className="brand" href="#top">JT<span>®</span></a><nav><a href="#work">Work <sup>02</sup></a><a href="#about">About</a><a href="mailto:teusjeremiejudith@gmail.com">Let’s talk ↗</a></nav></header><div className="scene" aria-hidden="true"><Canvas camera={{position:[0,0,5.5],fov:45}} dpr={[1,1.5]} fallback={<div className="fallback"/>}><ambientLight intensity={.5}/><Sculpture/><Environment resolution={128}><Lightformer position={[0,5,-2]} scale={[10,4,1]} intensity={5}/><Lightformer position={[-5,0,2]} scale={[2,10,1]} intensity={6}/><Lightformer position={[5,0,1]} scale={[2,8,1]} color="#315bff" intensity={8}/></Environment></Canvas></div><main><section className="hero" id="top"><div className="hero-top"><p>SOLUTIONS ENGINEER<br/>& HANDS-ON BUILDER</p><p>BASED IN THE PHILIPPINES<br/>WORKING AT THE INTERSECTION</p></div><h1>JAMIE TEUS<span>ENGINEERING × EXPRESSION</span></h1><div className="hero-bottom"><p>I turn business problems into<br/>solutions—and build them.</p><a href="#work">SCROLL TO EXPLORE ↓</a><span>PORTFOLIO / 2026</span></div></section><section className="manifesto"><span className="eyebrow">01 — THE APPROACH</span><h2 className="reveal">From<br/><em>complexity</em><br/>to clarity.</h2><div className="approach reveal"><p>Good solutions begin with the right questions. I connect business needs with cloud, data, and AI—and bring the ideas to life in code.</p><div><span>01 / UNDERSTAND</span><span>02 / ARCHITECT</span><span>03 / BUILD</span></div></div></section><section id="work" className="work"><div className="section-heading reveal"><span className="eyebrow">02 — SELECTED WORK</span><h2>Built to<br/><em>make a difference.</em></h2></div>{projects.map((p,i)=><article className="project reveal" key={p.name}><div className={'project-art art-'+i} aria-label="Conceptual visualization of the project"><span className="art-label">SYSTEM STUDY / {String(i+1).padStart(2,'0')}</span>{i===0?<div className="system"><span>REQUEST</span><b>↓</b><span>APPROVE</span><b>↓</b><span>FULFILL</span></div>:<div className="chip"><span>x86</span><b>→</b><span>ARM64</span></div>}<span className="art-caption">CONCEPT VISUALIZATION</span></div><div className="project-copy"><span className="eyebrow">{p.type}</span><h3>{p.name}</h3><p>{p.text}</p><details><summary>Explore the project ↗</summary><p>{p.details}</p><p className="stack">{p.stack}</p>{p.url&&<a href={p.url} target="_blank" rel="noreferrer">View source on GitHub ↗</a>}</details></div></article>)}</section><section id="about" className="about"><span className="eyebrow">03 — THE PERSON BEHIND THE WORK</span><h2 className="reveal">Curious by nature.<br/><em>Hands-on by choice.</em></h2><div className="about-grid reveal"><p>I’m Jeremie “Jamie” Teus, a Product Solutions Engineer at VST ECS Phils. Inc. My work spans technical discovery, solution consulting, executive demos, and full-stack development.<br/><br/>I enjoy the space where a business conversation becomes an architecture—and that architecture becomes something people can use.</p><div className="facts"><div><strong>40+</strong><span>Enablement sessions</span></div><div><strong>25+</strong><span>Partners supported</span></div><div><strong>50+</strong><span>Customers engaged</span></div></div></div><div className="credentials"><span>AWS Certified Cloud Practitioner</span><span>BS Information Technology · Cum Laude</span><span>Cloud / Data / AI / Development</span></div></section><footer id="contact"><span className="eyebrow">HAVE SOMETHING IN MIND?</span><a className="contact-title" href="mailto:teusjeremiejudith@gmail.com">LET’S TALK<span>↗</span></a><div className="footer-bottom"><span>© {new Date().getFullYear()} JAMIE TEUS</span><a href="https://www.linkedin.com/in/jeremie-judith-teus" target="_blank" rel="noreferrer">LINKEDIN ↗</a><a href="#top">BACK TO TOP ↑</a></div></footer></main></div>}
+function SectionIntro({
+  number,
+  label,
+  title,
+}: {
+  number: string;
+  label: string;
+  title: React.ReactNode;
+}) {
+  return (
+    <div className="section-intro">
+      <div className="section-code">
+        <span>{number}</span>
+        <span>{label}</span>
+      </div>
+      <Reveal>
+        <h2>{title}</h2>
+      </Reveal>
+    </div>
+  );
+}
+
+function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const titleX = useTransform(scrollYProgress, [0, 1], ['0%', '-16%']);
+  const titleScale = useTransform(scrollYProgress, [0, 1], [1, 0.72]);
+  const shaderY = useTransform(scrollYProgress, [0, 1], ['0%', '24%']);
+  const shaderScale = useTransform(scrollYProgress, [0, 1], [1, 1.28]);
+  const shaderOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  useEffect(() => {
+    if (!textRef.current || reduceMotion) return;
+    const scope = createScope({ root: textRef }).add(() => {
+      animate('.hero-token', {
+        opacity: [0, 1],
+        y: ['1.1em', '0em'],
+        rotate: [4, 0],
+        delay: stagger(90),
+        duration: 1050,
+        ease: 'outExpo',
+      });
+      animate('.hero-meta', {
+        opacity: [0, 1],
+        y: [20, 0],
+        delay: stagger(70, { start: 650 }),
+        duration: 850,
+        ease: 'outCubic',
+      });
+    });
+    return () => scope.revert();
+  }, [reduceMotion]);
+
+  return (
+    <section id="home" className="hero" ref={ref}>
+      <motion.div
+        className="hero-shader"
+        style={{ y: shaderY, scale: shaderScale, opacity: shaderOpacity }}
+        aria-hidden="true"
+      >
+        <MeshGradient
+          width="100%"
+          height="100%"
+          colors={['#F7FBFF', '#DCEEFF', '#0067FF', '#0757D9', '#A9D6FF']}
+          distortion={0.82}
+          swirl={0.34}
+          grainMixer={0.12}
+          grainOverlay={0.06}
+          speed={reduceMotion ? 0 : 0.22}
+          scale={1.15}
+          maxPixelCount={1200000}
+        />
+      </motion.div>
+      <div className="hero-grid" aria-hidden="true" />
+      <div className="hero-meta-row hero-meta">
+        <p>Solutions Engineer<br />Presales · Developer</p>
+        <p>Cainta, Rizal, PH<br />GMT +08:00</p>
+        <p className="hero-status"><i /> Available for conversations</p>
+      </div>
+      <motion.div
+        ref={textRef}
+        className="hero-copy"
+        style={{ x: titleX, scale: titleScale, transformOrigin: 'left center' }}
+      >
+        <h1 aria-label="Jeremie Jamie Teus">
+          <span className="hero-line"><span className="hero-token">Jeremie</span></span>
+          <span className="hero-line hero-line-offset">
+            <span className="hero-token hero-nickname">“Jamie”</span>
+            <span className="hero-token">Teus</span>
+          </span>
+        </h1>
+        <p className="hero-deck hero-meta">
+          I turn business objectives into cloud, data, and AI solutions — and I build them too.
+          From discovery and scoping to the demo that closes the room, and the React/TypeScript app behind it.
+        </p>
+      </motion.div>
+      <div className="hero-bottom hero-meta">
+        <MagneticLink href="#work" className="round-link">
+          <span>Explore the work</span><b>↓</b>
+        </MagneticLink>
+        <div className="hero-coordinate">
+          <span>SCROLL TO TRACE</span>
+          <i />
+        </div>
+        <span>PORTFOLIO / 2026</span>
+      </div>
+    </section>
+  );
+}
+
+function About() {
+  return (
+    <section id="about" className="chapter about-section">
+      <SectionIntro
+        number="01"
+        label="The person"
+        title={<>Between the <em>business problem</em><br />and the technical solution.</>}
+      />
+      <div className="about-layout">
+        <aside className="about-margin">
+          <span>How I work</span>
+          <div className="vertical-rule" />
+          <span>Listen<br />Translate<br />Build</span>
+        </aside>
+        <div className="about-story">
+          <ScrollWords text="I'm a Solutions Engineer in technical presales and solution consulting across the IT distribution space. I listen closely during discovery, decompose what a customer actually needs, and map it to the right cloud, data, and AI solutions." />
+          <ScrollWords text="I translate business objectives into solution approaches, then present them to technical teams and executives — through scoping, demos, and enablement. I'm also hands-on: I built a public-sector cloud application end to end with React, TypeScript, Laravel, and AWS." />
+        </div>
+      </div>
+      <div className="stat-ribbon">
+        {[
+          ['40+', 'Enablement sessions delivered'],
+          ['25+', 'Partners supported'],
+          ['50+', 'Customers engaged'],
+          ['AWS', 'Certified Cloud Practitioner'],
+        ].map(([value, label], index) => (
+          <Reveal key={label} delay={index * 0.08}>
+            <div className="stat-item">
+              <strong>{value}</strong>
+              <span>{label}</span>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Services() {
+  const [active, setActive] = useState(0);
+  const service = services[active];
+
+  return (
+    <section id="services" className="chapter services-section">
+      <SectionIntro
+        number="02"
+        label="What I do"
+        title={<>From first conversation to the <em>solution that ships.</em></>}
+      />
+      <div className="service-console">
+        <div className="service-list" role="tablist" aria-label="Services">
+          {services.map((item, index) => (
+            <button
+              key={item.title}
+              role="tab"
+              aria-selected={index === active}
+              aria-controls="service-detail"
+              onClick={() => setActive(index)}
+              onPointerEnter={() => setActive(index)}
+            >
+              <span>0{index + 1}</span>
+              <strong>{item.title}</strong>
+              <i>{index === active ? '●' : '○'}</i>
+            </button>
+          ))}
+        </div>
+        <div id="service-detail" className="service-detail" role="tabpanel">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -18, filter: 'blur(8px)' }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <span className="detail-index">SERVICE / 0{active + 1}</span>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              <div className="tag-row">
+                {service.tags.map((tag) => <span key={tag}>{tag}</span>)}
+              </div>
+              <div className="service-diagram" aria-hidden="true">
+                <span>QUESTION</span><i /><span>MAP</span><i /><span>OUTCOME</span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Work() {
+  const ref = useRef<HTMLElement>(null);
+  const [scene, setScene] = useState(0);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const trackX = useTransform(scrollYProgress, [0, 1], ['0%', '-75%']);
+  const meter = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+    setScene(Math.min(3, Math.floor(value * 4)));
+  });
+
+  return (
+    <section id="work" className="work-section" ref={ref}>
+      <div className="work-sticky">
+        <div className="work-topline">
+          <span>03 / SELECTED WORK</span>
+          <span>Cloud Service Fulfillment Platform</span>
+          <span>Scene 0{scene + 1} / 04</span>
+        </div>
+        <div className="work-progress"><motion.i style={{ width: meter }} /></div>
+        <motion.div className="work-track" style={{ x: trackX }}>
+          <article className="work-panel work-overview">
+            <div className="work-blueprint" aria-hidden="true">
+              <span className="bp-node bp-a">REQUEST</span>
+              <span className="bp-node bp-b">APPROVE</span>
+              <span className="bp-node bp-c">FULFILL</span>
+              <svg viewBox="0 0 800 500"><path d="M150 250 C300 80 420 420 650 220" /></svg>
+            </div>
+            <div className="work-copy">
+              <span>Public Sector · 2026</span>
+              <h2>Cloud Service<br /><em>Fulfillment Platform</em></h2>
+              <p>Full-Stack Engineer &amp; Solution Analyst</p>
+              <p className="work-summary">
+                An enterprise cloud platform for a public-sector engagement. I contributed across the stack,
+                focusing on the core business-logic workflows that power it.
+              </p>
+            </div>
+          </article>
+          <article className="work-panel work-impact">
+            <div className="impact-number">
+              <span>Forecasted first-year revenue</span>
+              <strong>$14M</strong>
+              <p>The value this platform is projected to unlock in year one.</p>
+            </div>
+            <div className="impact-stack">
+              {[
+                ['End-to-end', 'Core workflows delivered'],
+                ['Full-stack', 'Frontend & backend'],
+                ['AWS', 'Cloud-deployed & live'],
+              ].map(([value, label]) => (
+                <div key={value}><strong>{value}</strong><span>{label}</span></div>
+              ))}
+            </div>
+          </article>
+          <article className="work-panel work-features">
+            <div className="feature-intro">
+              <span>Contribution map</span>
+              <h3>What moved<br />through my hands.</h3>
+            </div>
+            <div className="feature-grid">
+              {workFeatures.map((feature) => (
+                <div key={feature.no} className="feature-cell">
+                  <span>{feature.no}</span><h4>{feature.title}</h4><p>{feature.body}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+          <article className="work-panel work-stack-panel">
+            <span className="stack-label">Built across the stack</span>
+            <div className="stack-marquee">
+              {['React', 'TypeScript', 'React Router', 'Tailwind CSS', 'PHP / Laravel', 'MongoDB', 'AWS'].map((item, index) => (
+                <motion.span
+                  key={item}
+                  initial={{ opacity: 0.2 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: index * 0.08 }}
+                >{item}</motion.span>
+              ))}
+            </div>
+            <div className="work-end">
+              <span>One platform</span><i /><span>Seven technologies</span><i /><span>End-to-end delivery</span>
+            </div>
+          </article>
+        </motion.div>
+        <div className="work-scroll-hint">VERTICAL SCROLL / HORIZONTAL STORY →</div>
+      </div>
+    </section>
+  );
+}
+
+function Capabilities() {
+  const [active, setActive] = useState(0);
+  const current = capabilities[active];
+
+  return (
+    <section id="capabilities" className="chapter capabilities-section">
+      <SectionIntro
+        number="04"
+        label="Projects & capabilities"
+        title={<>Side projects and what I can <em>build.</em></>}
+      />
+      <div className="capability-stage">
+        <div className="capability-index" role="tablist" aria-label="Projects and capabilities">
+          {capabilities.map((capability, index) => (
+            <button
+              role="tab"
+              aria-selected={active === index}
+              key={capability.label}
+              onClick={() => setActive(index)}
+              onPointerEnter={() => setActive(index)}
+            >
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{capability.label}</strong>
+              <i>↗</i>
+            </button>
+          ))}
+        </div>
+        <div className="capability-view" role="tabpanel">
+          <AnimatePresence mode="wait">
+            <motion.div
+              className="capability-card"
+              key={current.label}
+              initial={{ opacity: 0, rotateY: -9, x: 40 }}
+              animate={{ opacity: 1, rotateY: 0, x: 0 }}
+              exit={{ opacity: 0, rotateY: 7, x: -30 }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="capability-visual" aria-hidden="true">
+                <span>{current.mark}</span>
+                <div className="visual-grid" />
+                <i className="visual-orbit" />
+              </div>
+              <div className="capability-copy">
+                <span>{current.kind}</span>
+                <h3>{current.label}</h3>
+                <p>{current.description}</p>
+                <div className="tag-row">{current.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+                {'link' in current && current.link && (
+                  <a href={current.link} target="_blank" rel="noopener noreferrer">View project <b>↗</b></a>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Experience() {
+  return (
+    <section id="experience" className="chapter experience-section">
+      <SectionIntro number="05" label="The journey" title={<>Short track record.<br /><em>Real impact.</em></>} />
+      <div className="route-map">
+        {experience.map((entry, index) => (
+          <Reveal key={entry.role} className="route-stop" delay={index * 0.08}>
+            <div className="route-marker">
+              <span>{String(index + 1).padStart(2, '0')}</span><i />
+            </div>
+            <div className="route-time">
+              <span>{entry.period}</span>
+              {'current' in entry && entry.current && <strong><i />Now</strong>}
+            </div>
+            <div className="route-role">
+              <h3>{entry.role}</h3><p>{entry.org}</p>
+            </div>
+            <div className="route-detail">
+              <strong>{entry.highlight}</strong><p>{entry.summary}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Skills() {
+  const [active, setActive] = useState(0);
+  const group = skillGroups[active];
+
+  return (
+    <section id="skills" className="chapter skills-section">
+      <SectionIntro number="06" label="Skills & stack" title={<>The toolkit behind<br />the <em>solutions.</em></>} />
+      <div className="skills-map">
+        <div className="skill-switcher">
+          {skillGroups.map((item, index) => (
+            <button
+              key={item.category}
+              onClick={() => setActive(index)}
+              className={active === index ? 'active' : ''}
+            >
+              <span>0{index + 1}</span>{item.category}
+            </button>
+          ))}
+        </div>
+        <div className="skill-field">
+          <AnimatePresence mode="popLayout">
+            {group.items.map((item, index) => (
+              <motion.span
+                layout
+                key={item}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ delay: index * 0.035, type: 'spring', stiffness: 230, damping: 20 }}
+                className={`skill-node node-${index % 6}`}
+              >
+                <i />{item}
+              </motion.span>
+            ))}
+          </AnimatePresence>
+          <svg className="skill-lines" aria-hidden="true" viewBox="0 0 900 520">
+            <path d="M90 100 L430 80 L760 160 L530 270 L800 410 L350 445 L100 330 Z" />
+            <path d="M430 80 L350 445 M760 160 L100 330 M90 100 L800 410" />
+          </svg>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Certifications() {
+  return (
+    <section id="certifications" className="chapter certifications-section">
+      <SectionIntro
+        number="07"
+        label="Credentials"
+        title={<>Backed by <em>verified credentials.</em></>}
+      />
+      <div className="credential-list">
+        {certifications.map((certification, index) => (
+          <motion.div
+            key={certification.name}
+            className="credential-row"
+            initial="rest"
+            whileHover="hover"
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <span>0{index + 1}</span>
+            <h3>{certification.name}</h3>
+            <p>{certification.issuer}</p>
+            <motion.i variants={{ rest: { x: 0 }, hover: { x: 8, rotate: -45 } }}>→</motion.i>
+          </motion.div>
+        ))}
+      </div>
+      <div className="training-row">
+        <span>Also trained in</span>
+        <div>{training.map((item) => <span key={item}>{item}</span>)}</div>
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  return (
+    <footer id="contact" className="contact-section">
+      <div className="contact-path" aria-hidden="true"><i /><i /><i /></div>
+      <span className="contact-kicker">08 / Start a conversation</span>
+      <h2>Let’s build the<br /><em>right solution</em><br />together.</h2>
+      <p className="contact-intro">
+        Whether it's a discovery call, a technical deep-dive, or just a conversation about a problem you're solving — I'd love to hear from you.
+      </p>
+      <MagneticLink href="mailto:teusjeremiejudith@gmail.com" className="contact-cta">
+        <span>Start a conversation</span><b>↗</b>
+      </MagneticLink>
+      <div className="contact-grid">
+        {contactLinks.map((link) => {
+          const content = <><span>{link.label}</span><strong>{link.value}</strong><i>{link.action} ↗</i></>;
+          return link.href ? (
+            <a key={link.label} href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{content}</a>
+          ) : <div key={link.label}>{content}</div>;
+        })}
+      </div>
+      <div className="footer-line">
+        <span>© {new Date().getFullYear()} Jeremie Judith R. Teus</span>
+        <span>Built with React · Motion · Anime.js · Paper Shaders</span>
+        <a href="#home">Back to top ↑</a>
+      </div>
+    </footer>
+  );
+}
+
+export default function App() {
+  return (
+    <SmoothScroll>
+      <a className="skip-link" href="#about">Skip to content</a>
+      <BlueThread />
+      <Nav />
+      <main>
+        <Hero />
+        <About />
+        <Services />
+        <Work />
+        <Capabilities />
+        <Experience />
+        <Skills />
+        <Certifications />
+      </main>
+      <Contact />
+    </SmoothScroll>
+  );
+}
